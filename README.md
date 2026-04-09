@@ -2,11 +2,11 @@
 
 A browser-playable tribute to the classic DOS game presentation and loop:
 
-- 320×200 internal render resolution with chunky pixel scaling.
-- 10 short levels tuned around trophy + key + door progression.
+- 320×200 internal render resolution with chunky EGA-like pixel scaling.
+- 6 long scrolling levels tuned around trophy + key + door progression.
 - Gun pickup and limited ammo.
 - Patrol enemies, spikes, score, lives, and level progression.
-- Retro synth SFX and CRT-style scanline treatment.
+- Retro PC-speaker style SFX, black-screen DOS palette, and scanline treatment.
 
 ## Run locally
 

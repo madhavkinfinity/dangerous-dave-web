@@ -1,5 +1,5 @@
 const TILE = 16;
-const GRID_W = 20;
+const VIEW_W = 20;
 const GRID_H = 12;
 const HUD_H = 16;
 
@@ -53,198 +53,163 @@ const SFX = {
 };
 
 const palette = {
-  sky1: "#120d2c",
-  sky2: "#2a1f5e",
-  mountain: "#1d3c8f",
-  ground: "#0f2258",
-  brickDark: "#1f4ca5",
-  brickLight: "#6db6ff",
-  playerHat: "#e21863",
-  playerShirt: "#00d3c8",
-  playerSkin: "#ffd29f",
-  playerPants: "#2141c9",
-  trophy: "#ffd83c",
-  key: "#8bff63",
-  gun: "#d2d2ff",
-  enemy: "#e74a5f",
-  hazard: "#f2f2f2",
-  door: "#7f58ff",
-  bullet: "#ffe4af",
-  hudBg: "#02020e",
+  brickDark: "#0010a8",
+  brickMid: "#2858ff",
+  brickLight: "#58a8ff",
+  playerHat: "#ff3030",
+  playerShirt: "#00a800",
+  playerSkin: "#ffd7a8",
+  playerPants: "#2050ff",
+  trophy: "#ffd030",
+  key: "#ffff58",
+  gun: "#a8a8a8",
+  enemy: "#ff5858",
+  hazard: "#f8f8f8",
+  door: "#00a800",
+  bullet: "#ffd7a8",
+  hudBg: "#000000",
   hudText: "#f8f8f8"
 };
 
+const SPRITES = {
+  playerStandR: ["...RRR.....", "..RRRRR....", "...SSS.....", "..SSsS.....", "...GGGG....", "..GGGGGG...", "..GGGGGG...", "...BBBB....", "..BB..BB..."],
+  playerStandL: [".....RRR...", "....RRRRR..", ".....SSS...", ".....SsSS..", "....GGGG...", "...GGGGGG..", "...GGGGGG..", "....BBBB...", "...BB..BB.."],
+  playerWalkR: ["...RRR.....", "..RRRRR....", "...SSS.....", "..SSsS.....", "...GGGG....", "..GGGGGG...", "..GGGGGG...", "...BBBB....", "..B...BB..."],
+  playerWalkL: [".....RRR...", "....RRRRR..", ".....SSS...", ".....SsSS..", "....GGGG...", "...GGGGGG..", "...GGGGGG..", "....BBBB...", "...BB...B.."],
+  enemyA: ["..EEEEEE...", ".EeeeeeeE..", ".E.e..e.E..", ".EEEEEEEE..", "..E.EE.E...", ".E..EE..E.."],
+  enemyB: ["..EEEEEE...", ".EeeeeeeE..", ".E.e..e.E..", ".EEEEEEEE..", ".E..EE..E..", "..E.EE.E..."],
+  trophy: ["..TTTT..", ".TTTTTT.", "..TTTT..", "...TT...", "..TTTT.."],
+  key: [".KKK....", "K...K...", ".KKK.KKK"],
+  gun: ["GGGGGG..", "..GG....", "..GG...."],
+};
+
+const SPRITE_COLORS = {
+  R: palette.playerHat,
+  S: palette.playerSkin,
+  s: "#111111",
+  G: palette.playerShirt,
+  B: palette.playerPants,
+  E: palette.enemy,
+  e: "#3a0000",
+  T: palette.trophy,
+  K: palette.key,
+};
+
+function drawSprite(px, py, data, colors = SPRITE_COLORS) {
+  for (let y = 0; y < data.length; y++) {
+    for (let x = 0; x < data[y].length; x++) {
+      const c = data[y][x];
+      if (c === ".") continue;
+      ctx.fillStyle = colors[c] || "#fff";
+      ctx.fillRect(px + x, py + y, 1, 1);
+    }
+  }
+}
+
 function makeTemplate(rows) {
-  return rows.map((r) => r.padEnd(GRID_W, ".").slice(0, GRID_W));
+  const width = Math.max(...rows.map((r) => r.length));
+  return rows.map((r) => r.padEnd(width, "."));
 }
 
 const LEVEL_TEMPLATES = [
   makeTemplate([
-    "####################",
-    "#....T.........D...#",
-    "#........####......#",
-    "#..E...............#",
-    "#......S...........#",
-    "#.........T........#",
-    "#....####......E...#",
-    "#...............G..#",
-    "#..P................",
-    "#.......####.......#",
-    "#....K.............#",
-    "####################"
+    "################################################################",
+    "#....T..............#......E.............T.......#...........D.#",
+    "#...........####....#.............####............#............#",
+    "#..P...............S#....................E......................#",
+    "#.............########..........######..................#####...#",
+    "#.....................T.........................................#",
+    "#....####.................E..............######.........E.......#",
+    "#..............G................................................#",
+    "#......................######............................T......#",
+    "#...........E.....................####..........................#",
+    "#......K........................................................#",
+    "################################################################",
   ]),
   makeTemplate([
-    "####################",
-    "#...D..............#",
-    "#......####....T...#",
-    "#..E...............#",
-    "#....S......E......#",
-    "#...............####",
-    "#..P......G........#",
-    "#.......####.......#",
-    "#.............T....#",
-    "#....E.............#",
-    "#........K.........#",
-    "####################"
+    "################################################################",
+    "#..P...............####...........T.......................D.....#",
+    "#........E..................................#####...............#",
+    "#..........######............S........E....................T....#",
+    "#......................####.................######..............#",
+    "#...T...........................................................#",
+    "#.........E.....................G...............E...............#",
+    "#..............######.....................########..............#",
+    "#...............................................................#",
+    "#....####....................T.........................E........#",
+    "#.............K.................................................#",
+    "################################################################",
   ]),
   makeTemplate([
-    "####################",
-    "#..D......####.....#",
-    "#.....T............#",
-    "#.........E........#",
-    "#..S..........###..#",
-    "#....####........E.#",
-    "#..P........G......#",
-    "#.......T..........#",
-    "#............####..#",
-    "#...E..............#",
-    "#.......K..........#",
-    "####################"
+    "################################################################",
+    "#..P............T........................E.........####.....D...#",
+    "#........######....................#####........................#",
+    "#...E...............S...........................................#",
+    "#.........#####..............T.................######...........#",
+    "#......................E........................................#",
+    "#....G.............########............E....................T...#",
+    "#.........................#####.................................#",
+    "#......E........................................................#",
+    "#....................######.............####....................#",
+    "#..K............................................................#",
+    "################################################################",
   ]),
   makeTemplate([
-    "####################",
-    "#....D...........T.#",
-    "#..####......E.....#",
-    "#..........####....#",
-    "#..S................",
-    "#....T.........E...#",
-    "#..P......G........#",
-    "#.........####.....#",
-    "#..E...............#",
-    "#......####........#",
-    "#....K.............#",
-    "####################"
+    "################################################################",
+    "#..P..............#####..............E..............T......D....#",
+    "#...........E..................####.......................####..#",
+    "#.......S..................T....................................#",
+    "#..............#####.........................E..................#",
+    "#............................######.............................#",
+    "#....T.........G....................................#####.......#",
+    "#........E.........................####..........................#",
+    "#....................#####....................E.................#",
+    "#.............T.................................................#",
+    "#..K............................................................#",
+    "################################################################",
   ]),
   makeTemplate([
-    "####################",
-    "#..D.....####......#",
-    "#.......T......E...#",
-    "#..E..........###..#",
-    "#..S................",
-    "#......T............#",
-    "#..P........G...E..#",
-    "#......####........#",
-    "#..............T...#",
-    "#....E.............#",
-    "#........K.........#",
-    "####################"
+    "################################################################",
+    "#..P.......E.................T.................####.......D.....#",
+    "#.............#####...................E..........................#",
+    "#.....S....................................................T....#",
+    "#.................####.................#####....................#",
+    "#..........T..................E..................................#",
+    "#....G...................########.......................E.......#",
+    "#.............E.................................................#",
+    "#....................####............T..............#####.......#",
+    "#...............................................................#",
+    "#..K............................................................#",
+    "################################################################",
   ]),
   makeTemplate([
-    "####################",
-    "#...D...........T..#",
-    "#......####........#",
-    "#...E............E.#",
-    "#...S..............#",
-    "#.......T.....####.#",
-    "#..P.......G.......#",
-    "#......####........#",
-    "#..............T...#",
-    "#....E.............#",
-    "#.......K..........#",
-    "####################"
-  ]),
-  makeTemplate([
-    "####################",
-    "#..D.....####......#",
-    "#.....E........T...#",
-    "#..###.............#",
-    "#..S......E........#",
-    "#.......T.....####.#",
-    "#..P.......G.......#",
-    "#......####....E...#",
-    "#..............T...#",
-    "#....E.............#",
-    "#........K.........#",
-    "####################"
-  ]),
-  makeTemplate([
-    "####################",
-    "#...D...........T..#",
-    "#....####....E.....#",
-    "#.........###......#",
-    "#..S..........E....#",
-    "#......T...........#",
-    "#..P......G....###.#",
-    "#....E.............#",
-    "#...........####...#",
-    "#...............T..#",
-    "#......K...........#",
-    "####################"
-  ]),
-  makeTemplate([
-    "####################",
-    "#..D.......####....#",
-    "#......E........T..#",
-    "#...###...........##",
-    "#..S..........E....#",
-    "#....T.............#",
-    "#..P......G...###..#",
-    "#......E...........#",
-    "#...........####...#",
-    "#...............T..#",
-    "#.......K..........#",
-    "####################"
-  ]),
-  makeTemplate([
-    "####################",
-    "#...D.....####....T#",
-    "#.....E............#",
-    "#..###.........E...#",
-    "#..S................",
-    "#....T.......####..#",
-    "#..P......G........#",
-    "#......E.......###.#",
-    "#.........####.....#",
-    "#.............T....#",
-    "#.......K..........#",
-    "####################"
+    "################################################################",
+    "#..P...........T............####...........E.............D......#",
+    "#........####........................................#####.......#",
+    "#...E..................S...................T....................#",
+    "#...............#####...................####....................#",
+    "#.....T..........................E..............................#",
+    "#.........G...........######..............................E.....#",
+    "#................E..............................................#",
+    "#...........####.................T..............#####...........#",
+    "#...............................................................#",
+    "#..K............................................................#",
+    "################################################################",
   ])
 ];
 
 function parseLevel(rows) {
-  const tiles = rows.map((r) => r.split(""));
+  const width = Math.max(...rows.map((r) => r.length));
+  const tiles = rows.map((r) => r.padEnd(width, ".").split(""));
   const entities = { enemies: [], trophies: [], hazards: [], bullets: [] };
-  const player = {
-    x: TILE * 2 + 2,
-    y: TILE * 8,
-    w: 11,
-    h: 14,
-    vx: 0,
-    vy: 0,
-    dir: 1,
-    onGround: false,
-    hasKey: false,
-    hasGun: false,
-    alive: true
-  };
-  let door = { x: TILE * 17, y: TILE, w: TILE, h: TILE * 2 - 2 };
+  const player = { x: TILE * 2 + 2, y: TILE * 8, w: 11, h: 14, vx: 0, vy: 0, dir: 1, onGround: false, hasKey: false, hasGun: false, alive: true };
+  let door = { x: TILE * (width - 3), y: TILE, w: TILE, h: TILE * 2 - 2 };
 
   for (let y = 0; y < GRID_H; y++) {
-    for (let x = 0; x < GRID_W; x++) {
-      const c = tiles[y][x];
+    for (let x = 0; x < width; x++) {
+      const c = tiles[y][x] || ".";
       const px = x * TILE;
       const py = y * TILE;
-
       if (c === "P") {
         player.x = px + 2;
         player.y = py + 1;
@@ -270,25 +235,16 @@ function parseLevel(rows) {
       }
     }
   }
-  return { tiles, entities, player, door };
+
+  return { tiles, entities, player, door, width };
 }
 
-let state = {
-  level: 0,
-  lives: 3,
-  score: 0,
-  ammo: 0,
-  shootHeld: false,
-  restartHeld: false,
-  enterHeld: false,
-  gameOver: false,
-  gameWin: false
-};
-
+let state = { level: 0, lives: 3, score: 0, ammo: 0, shootHeld: false, restartHeld: false, enterHeld: false, gameOver: false, gameWin: false };
 let world = parseLevel(LEVEL_TEMPLATES[state.level]);
+let frameCount = 0;
 
 function solidAt(tx, ty) {
-  if (tx < 0 || ty < 0 || tx >= GRID_W || ty >= GRID_H) return true;
+  if (tx < 0 || ty < 0 || tx >= world.width || ty >= GRID_H) return true;
   return world.tiles[ty][tx] === "#";
 }
 
@@ -307,7 +263,6 @@ function resolveCollision(entity, axis) {
       if (!solidAt(tx, ty)) continue;
       const tileRect = { x: tx * TILE, y: ty * TILE, w: TILE, h: TILE };
       if (!rectCollide(entity, tileRect)) continue;
-
       if (axis === "x") {
         if (entity.vx > 0) entity.x = tileRect.x - entity.w;
         else if (entity.vx < 0) entity.x = tileRect.x + tileRect.w;
@@ -328,7 +283,6 @@ function resolveCollision(entity, axis) {
 function movePlayer() {
   const p = world.player;
   p.vx = 0;
-
   if (keys.has("ArrowLeft")) {
     p.vx = -MOVE_SPEED;
     p.dir = -1;
@@ -344,10 +298,8 @@ function movePlayer() {
   }
 
   p.vy = Math.min(MAX_FALL, p.vy + GRAVITY);
-
   p.x += p.vx;
   resolveCollision(p, "x");
-
   p.y += p.vy;
   p.onGround = false;
   resolveCollision(p, "y");
@@ -360,13 +312,7 @@ function shootIfNeeded() {
   if (!keys.has("KeyX") || !p.hasGun || state.ammo <= 0 || state.shootHeld) return;
   state.shootHeld = true;
   state.ammo--;
-  world.entities.bullets.push({
-    x: p.x + (p.dir > 0 ? 10 : -2),
-    y: p.y + 6,
-    w: 4,
-    h: 2,
-    vx: p.dir * 3.7
-  });
+  world.entities.bullets.push({ x: p.x + (p.dir > 0 ? 10 : -2), y: p.y + 6, w: 4, h: 2, vx: p.dir * 3.7 });
   SFX.shoot();
 }
 
@@ -388,19 +334,17 @@ function updateBullets() {
     }
   }
 
-  world.entities.bullets = world.entities.bullets.filter((b) => !b.dead && b.x > -8 && b.x < GRID_W * TILE + 8);
+  world.entities.bullets = world.entities.bullets.filter((b) => !b.dead && b.x > -8 && b.x < world.width * TILE + 8);
 }
 
 function updateEnemies() {
   for (const enemy of world.entities.enemies) {
     if (!enemy.alive) continue;
-
     enemy.x += enemy.vx;
     const aheadX = enemy.vx > 0 ? enemy.x + enemy.w + 1 : enemy.x - 1;
     const wallTx = Math.floor(aheadX / TILE);
     const bodyTy = Math.floor((enemy.y + enemy.h / 2) / TILE);
     const floorTy = Math.floor((enemy.y + enemy.h + 1) / TILE);
-
     if (solidAt(wallTx, bodyTy) || !solidAt(wallTx, floorTy)) enemy.vx *= -1;
     if (rectCollide(world.player, enemy)) loseLife();
   }
@@ -428,22 +372,18 @@ function collectables() {
   if (ent.gun && !ent.gun.taken && rectCollide(p, ent.gun)) {
     ent.gun.taken = true;
     p.hasGun = true;
-    state.ammo += 8;
+    state.ammo += 12;
     SFX.pickup();
   }
 
-  for (const hazard of ent.hazards) {
-    if (rectCollide(p, hazard)) loseLife();
-  }
+  for (const hazard of ent.hazards) if (rectCollide(p, hazard)) loseLife();
 
   const totalTrophies = ent.trophies.length;
   const collectedTrophies = ent.trophies.filter((t) => t.taken).length;
-
   if (rectCollide(p, world.door) && p.hasKey && collectedTrophies === totalTrophies) {
     state.score += 1000;
     state.level++;
     SFX.door();
-
     if (state.level >= LEVEL_TEMPLATES.length) {
       state.gameWin = true;
       SFX.win();
@@ -458,52 +398,29 @@ function loseLife() {
   world.player.alive = false;
   state.lives--;
   SFX.death();
-
   setTimeout(() => {
-    if (state.lives <= 0) {
-      state.gameOver = true;
-    } else {
-      world = parseLevel(LEVEL_TEMPLATES[state.level]);
-    }
+    if (state.lives <= 0) state.gameOver = true;
+    else world = parseLevel(LEVEL_TEMPLATES[state.level]);
   }, 320);
 }
 
 function resetAll() {
-  state = {
-    level: 0,
-    lives: 3,
-    score: 0,
-    ammo: 0,
-    shootHeld: false,
-    restartHeld: false,
-    enterHeld: false,
-    gameOver: false,
-    gameWin: false
-  };
+  state = { level: 0, lives: 3, score: 0, ammo: 0, shootHeld: false, restartHeld: false, enterHeld: false, gameOver: false, gameWin: false };
   world = parseLevel(LEVEL_TEMPLATES[0]);
 }
 
-function drawBackground() {
-  const g = ctx.createLinearGradient(0, HUD_H, 0, canvas.height);
-  g.addColorStop(0, palette.sky2);
-  g.addColorStop(1, palette.sky1);
-  ctx.fillStyle = g;
+function cameraOffsetX() {
+  const target = world.player.x + world.player.w / 2 - canvas.width / 2;
+  return Math.max(0, Math.min(target, world.width * TILE - canvas.width));
+}
+
+function drawBackground(camX) {
+  ctx.fillStyle = "#000";
   ctx.fillRect(0, HUD_H, canvas.width, canvas.height - HUD_H);
-
-  ctx.fillStyle = palette.mountain;
-  ctx.fillRect(0, 112 + HUD_H, 64, 72);
-  ctx.fillRect(44, 94 + HUD_H, 84, 90);
-  ctx.fillRect(118, 124 + HUD_H, 70, 60);
-  ctx.fillRect(174, 103 + HUD_H, 78, 81);
-  ctx.fillRect(238, 114 + HUD_H, 82, 70);
-
-  ctx.fillStyle = palette.ground;
-  ctx.fillRect(0, 176 + HUD_H, canvas.width, 24);
-
-  ctx.fillStyle = "#ffffff";
-  for (let i = 0; i < 30; i++) {
-    const x = (i * 31) % canvas.width;
-    const y = HUD_H + ((i * 47) % 120);
+  ctx.fillStyle = "#101010";
+  for (let i = 0; i < 26; i++) {
+    const x = ((i * 53 - camX * 0.15 + frameCount * 0.2) % canvas.width + canvas.width) % canvas.width;
+    const y = HUD_H + ((i * 29) % 120);
     ctx.fillRect(x, y, 1, 1);
   }
 }
@@ -514,73 +431,39 @@ function drawTile(x, y, c) {
   const py = y * TILE + HUD_H;
   ctx.fillStyle = palette.brickDark;
   ctx.fillRect(px, py, TILE, TILE);
+  ctx.fillStyle = palette.brickMid;
+  ctx.fillRect(px + 1, py + 1, TILE - 2, TILE - 2);
   ctx.fillStyle = palette.brickLight;
-  ctx.fillRect(px + 1, py + 1, TILE - 2, 4);
-  ctx.fillRect(px + 1, py + 8, TILE - 2, 2);
+  ctx.fillRect(px + 2, py + 2, TILE - 4, 2);
+  ctx.fillRect(px + 2, py + 8, TILE - 4, 1);
 }
 
 function drawPlayer(p) {
   const x = Math.round(p.x);
   const y = Math.round(p.y + HUD_H);
-  ctx.fillStyle = palette.playerHat;
-  ctx.fillRect(x + 2, y, 8, 3);
-  ctx.fillStyle = palette.playerSkin;
-  ctx.fillRect(x + 3, y + 3, 6, 4);
-  ctx.fillStyle = palette.playerShirt;
-  ctx.fillRect(x + 2, y + 7, 8, 4);
-  ctx.fillStyle = palette.playerPants;
-  ctx.fillRect(x + 2, y + 11, 3, 3);
-  ctx.fillRect(x + 7, y + 11, 3, 3);
-  ctx.fillStyle = "#0b0b0b";
-  const eyeX = p.dir > 0 ? x + 8 : x + 3;
-  ctx.fillRect(eyeX, y + 4, 1, 1);
+  const moving = Math.abs(p.vx) > 0.05;
+  const walk = moving && Math.floor(frameCount / 10) % 2 === 0;
+  const sprite = p.dir > 0 ? (walk ? SPRITES.playerWalkR : SPRITES.playerStandR) : (walk ? SPRITES.playerWalkL : SPRITES.playerStandL);
+  drawSprite(x, y, sprite);
 }
 
 function drawEnemy(enemy) {
   const x = Math.round(enemy.x);
-  const y = Math.round(enemy.y + HUD_H);
-  ctx.fillStyle = palette.enemy;
-  ctx.fillRect(x + 1, y + 2, 9, 8);
-  ctx.fillStyle = "#22040a";
-  ctx.fillRect(x + 3, y + 4, 1, 1);
-  ctx.fillRect(x + 7, y + 4, 1, 1);
+  const y = Math.round(enemy.y + HUD_H + 2);
+  const sprite = Math.floor(frameCount / 14) % 2 === 0 ? SPRITES.enemyA : SPRITES.enemyB;
+  drawSprite(x, y, sprite);
 }
-
-function drawTrophy(t) {
-  const x = Math.round(t.x);
-  const y = Math.round(t.y + HUD_H);
-  ctx.fillStyle = palette.trophy;
-  ctx.fillRect(x + 2, y + 1, 4, 3);
-  ctx.fillRect(x + 3, y + 4, 2, 3);
-  ctx.fillRect(x + 2, y + 7, 4, 1);
-}
-
-function drawKey(k) {
-  const x = Math.round(k.x);
-  const y = Math.round(k.y + HUD_H);
-  ctx.fillStyle = palette.key;
-  ctx.fillRect(x + 1, y + 1, 3, 3);
-  ctx.fillRect(x + 4, y + 2, 3, 1);
-  ctx.fillRect(x + 6, y + 2, 1, 2);
-}
-
-function drawGun(g) {
-  const x = Math.round(g.x);
-  const y = Math.round(g.y + HUD_H);
-  ctx.fillStyle = palette.gun;
-  ctx.fillRect(x + 1, y + 2, 7, 2);
-  ctx.fillRect(x + 4, y + 4, 2, 2);
-}
+function drawTrophy(t) { drawSprite(Math.round(t.x), Math.round(t.y + HUD_H + 1), SPRITES.trophy); }
+function drawKey(k) { drawSprite(Math.round(k.x), Math.round(k.y + HUD_H + 1), SPRITES.key); }
+function drawGun(g) { drawSprite(Math.round(g.x), Math.round(g.y + HUD_H + 2), SPRITES.gun, { G: palette.gun }); }
 
 function drawDoor(d) {
   const x = Math.round(d.x);
   const y = Math.round(d.y + HUD_H);
-  ctx.fillStyle = palette.door;
+  ctx.fillStyle = "#005000";
   ctx.fillRect(x, y, d.w, d.h);
-  ctx.fillStyle = "#cab7ff";
-  ctx.fillRect(x + 2, y + 2, d.w - 4, d.h - 5);
-  ctx.fillStyle = "#673bd9";
-  ctx.fillRect(x + d.w - 4, y + Math.floor(d.h / 2), 2, 2);
+  ctx.fillStyle = palette.door;
+  ctx.fillRect(x + 2, y + 2, d.w - 4, d.h - 4);
 }
 
 function drawHazard(h) {
@@ -588,11 +471,9 @@ function drawHazard(h) {
   const y = Math.round(h.y + HUD_H);
   ctx.fillStyle = palette.hazard;
   for (let i = 0; i < h.w; i += 4) {
-    ctx.beginPath();
-    ctx.moveTo(x + i, y + h.h);
-    ctx.lineTo(x + i + 2, y);
-    ctx.lineTo(x + i + 4, y + h.h);
-    ctx.fill();
+    ctx.fillRect(x + i, y + h.h - 1, 4, 1);
+    ctx.fillRect(x + i + 1, y + h.h - 2, 2, 1);
+    ctx.fillRect(x + i + 2, y + h.h - 3, 1, 1);
   }
 }
 
@@ -605,17 +486,11 @@ function drawHUD() {
 
   const trophiesTotal = world.entities.trophies.length;
   const trophiesGot = world.entities.trophies.filter((t) => t.taken).length;
-  const levelText = `L ${Math.min(state.level + 1, LEVEL_TEMPLATES.length)}`;
-  const scoreText = `S ${state.score.toString().padStart(5, "0")}`;
-  const livesText = `V ${state.lives}`;
-  const ammoText = `A ${state.ammo}`;
-  const trophyText = `T ${trophiesGot}/${trophiesTotal}`;
-
-  ctx.fillText(levelText, 6, 9);
-  ctx.fillText(scoreText, 48, 9);
-  ctx.fillText(livesText, 136, 9);
-  ctx.fillText(ammoText, 176, 9);
-  ctx.fillText(trophyText, 216, 9);
+  ctx.fillText(`LEVEL ${Math.min(state.level + 1, LEVEL_TEMPLATES.length)}`, 4, 9);
+  ctx.fillText(`SCORE ${state.score.toString().padStart(5, "0")}`, 62, 9);
+  ctx.fillText(`DAVE ${state.lives}`, 154, 9);
+  ctx.fillText(`AMMO ${state.ammo}`, 210, 9);
+  ctx.fillText(`GOLD ${trophiesGot}/${trophiesTotal}`, 262, 9);
 }
 
 function drawOverlay() {
@@ -625,7 +500,7 @@ function drawOverlay() {
   ctx.fillStyle = "#fff";
   ctx.textAlign = "center";
   ctx.font = "bold 14px monospace";
-  ctx.fillText(state.gameOver ? "GAME OVER" : "YOU DID IT!", canvas.width / 2, 92 + HUD_H);
+  ctx.fillText(state.gameOver ? "DAVE DIED" : "LEVELS CLEARED", canvas.width / 2, 92 + HUD_H);
   ctx.font = "9px monospace";
   ctx.fillText("Press ENTER to restart", canvas.width / 2, 110 + HUD_H);
   ctx.textAlign = "start";
@@ -633,27 +508,29 @@ function drawOverlay() {
 
 function drawScanlines() {
   ctx.fillStyle = "rgba(0,0,0,0.09)";
-  for (let y = 0; y < canvas.height; y += 2) {
-    ctx.fillRect(0, y, canvas.width, 1);
-  }
+  for (let y = 0; y < canvas.height; y += 2) ctx.fillRect(0, y, canvas.width, 1);
 }
 
 function render() {
-  drawBackground();
+  const camX = cameraOffsetX();
+  drawBackground(camX);
+
+  ctx.save();
+  ctx.translate(-camX, 0);
   world.tiles.forEach((row, y) => row.forEach((cell, x) => drawTile(x, y, cell)));
   drawDoor(world.door);
-
   for (const hazard of world.entities.hazards) drawHazard(hazard);
   for (const trophy of world.entities.trophies) if (!trophy.taken) drawTrophy(trophy);
   if (world.entities.key && !world.entities.key.taken) drawKey(world.entities.key);
   if (world.entities.gun && !world.entities.gun.taken) drawGun(world.entities.gun);
-
   for (const enemy of world.entities.enemies) if (enemy.alive) drawEnemy(enemy);
   for (const bullet of world.entities.bullets) {
     ctx.fillStyle = palette.bullet;
     ctx.fillRect(Math.round(bullet.x), Math.round(bullet.y + HUD_H), bullet.w, bullet.h);
   }
   drawPlayer(world.player);
+  ctx.restore();
+
   drawHUD();
   drawOverlay();
   drawScanlines();
@@ -681,6 +558,7 @@ function tick() {
     collectables();
   }
 
+  frameCount++;
   render();
   requestAnimationFrame(tick);
 }
