@@ -1,25 +1,25 @@
 # Dangerous Dave (Web Tribute)
 
-A browser-playable tribute inspired by the classic DOS platformer gameplay loop:
+A browser-playable tribute to the classic DOS game presentation and loop:
 
-- 10 handcrafted levels.
-- Collect all trophies, then the key, and exit via the door.
-- Gun pickup unlocks ranged attacks with limited ammo.
-- Retro-style synthesized sound effects (jump/shoot/pickup/death/door/win).
-- Enemy patrols, hazards, lives, score, and level progression.
+- 320×200 internal render resolution with chunky pixel scaling.
+- 10 short levels tuned around trophy + key + door progression.
+- Gun pickup and limited ammo.
+- Patrol enemies, spikes, score, lives, and level progression.
+- Retro synth SFX and CRT-style scanline treatment.
 
 ## Run locally
 
-Open `index.html` directly in a browser, or serve the folder with any static file server.
+Open `index.html` in a browser, or serve the folder with any static server.
 
 ## Controls
 
 - Left / Right arrows: Move
-- `Z`: Jump
-- `X`: Shoot (when gun is collected)
+- `Z` or `Space`: Jump
+- `X`: Shoot (after collecting gun)
 - `R`: Restart current level
-- `Enter`: Restart after game over / win
+- `Enter`: Restart after game over / victory
 
 ## Notes
 
-This project is a faithful-inspired tribute built from scratch for the web and does not include original game assets.
+This is an original web implementation inspired by Dangerous Dave's era and feel. No original assets are included.
