@@ -3,29 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dangerous Dave (Web Tribute)</title>
+  <title>Dangerous Dave (1988-style Web Tribute)</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <main class="app">
     <header>
-      <h1>Dangerous Dave — Web Tribute</h1>
-      <p class="subtitle">Collect trophies, key, and reach the door. Find the gun for ammo.</p>
+      <h1>Dangerous Dave — 1988 Style</h1>
+      <p class="subtitle">Collect every trophy, grab the key, and escape through the door.</p>
     </header>
 
-    <section class="hud" aria-live="polite">
-      <span id="hudLevel">Level: 1</span>
-      <span id="hudLives">Lives: 3</span>
-      <span id="hudScore">Score: 0</span>
-      <span id="hudAmmo">Ammo: 0</span>
-      <span id="hudTrophies">Trophies: 0 / 0</span>
+    <section class="screen-shell" aria-label="Game screen">
+      <canvas id="game" width="320" height="200" aria-label="Dangerous Dave game canvas"></canvas>
     </section>
-
-    <canvas id="game" width="960" height="576" aria-label="Dangerous Dave game canvas"></canvas>
 
     <section class="controls">
       <p><strong>Controls:</strong> ← → move • Z jump • X shoot • R restart level</p>
-      <p>Press Enter when game over / game clear.</p>
+      <p>Press Enter on game over / victory.</p>
     </section>
   </main>
 
