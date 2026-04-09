@@ -1,8 +1,8 @@
 :root {
-  --bg: #0a0f24;
-  --panel: #11162f;
-  --text: #f6f8ff;
-  --edge: #5b6ca8;
+  --bg: #020202;
+  --panel: #000000;
+  --text: #f1f1f1;
+  --edge: #3a66ff;
 }
 
 * {
@@ -14,9 +14,9 @@ body {
   min-height: 100vh;
   display: grid;
   place-items: center;
-  background: radial-gradient(circle at 50% 0%, #28336c 0%, #111733 35%, #080b1b 100%);
+  background: #060606;
   color: var(--text);
-  font-family: "Segoe UI", Tahoma, sans-serif;
+  font-family: "Courier New", Courier, monospace;
 }
 
 .app {
@@ -26,20 +26,23 @@ body {
 
 h1 {
   margin: 0;
-  font-size: clamp(1.25rem, 2.8vw, 2rem);
+  font-size: clamp(1.2rem, 2.8vw, 1.8rem);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #79a2ff;
 }
 
 .subtitle {
-  margin: 0.25rem 0 0.85rem;
-  color: #d7defc;
+  margin: 0.35rem 0 0.85rem;
+  color: #d8e2ff;
 }
 
 .screen-shell {
-  padding: 0.9rem;
-  border: 3px solid #6d7dc2;
-  border-radius: 0.5rem;
-  background: linear-gradient(#121936, #0f1430);
-  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.45);
+  padding: 0.5rem;
+  border: 2px solid #5e83ff;
+  border-radius: 0;
+  background: #000;
+  box-shadow: 0 0 0 2px #1b2f73 inset, 0 18px 36px rgba(0, 0, 0, 0.5);
 }
 
 canvas {
@@ -55,11 +58,12 @@ canvas {
 .controls {
   margin-top: 0.8rem;
   background: var(--panel);
-  border: 1px solid #3a467b;
-  border-radius: 0.45rem;
+  border: 1px solid #5e83ff;
+  border-radius: 0;
   padding: 0.5rem 0.7rem;
 }
 
 .controls p {
   margin: 0.2rem 0;
+  color: #dce5ff;
 }
